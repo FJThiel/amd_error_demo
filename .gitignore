@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# Build dir
+build*
+debug_build
+release_build
+/models
+/x64
+/Win32
+/bin
+/lib
+/install
+/cmake-build-debug
+/.idea
