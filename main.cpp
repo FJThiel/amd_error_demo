@@ -96,7 +96,7 @@ namespace {
 } // namespace
 
 static const std::string vertexShader = R"glsl(
-		#version 450
+		#version 450 core
 		precision mediump float;
 
 		in vec2 position;
@@ -111,7 +111,7 @@ static const std::string vertexShader = R"glsl(
 	)glsl";
 
 static const std::string fragmentShader = R"glsl(
-		#version 450
+		#version 450 core
 		precision mediump float;
 
 		out vec4 outColor;
@@ -204,72 +204,76 @@ int main(int /*argc*/, char * /*argv[]*/) {
 
 	if (!gladLoadGL())
 		return -3;
-	{
-		// Output information about Vendor, Version and Renderer
-		std::cout << glGetString(GL_VENDOR) << std::endl;
-		std::cout << glGetString(GL_VERSION) << std::endl;
-		std::cout << glGetString(GL_RENDERER) << std::endl;
 
-		// Set debug output
-		glEnable(GL_DEBUG_OUTPUT);
-		glDebugMessageCallback((GLDEBUGPROC)debugCallback, 0);
+	// Output information about Vendor, Version and Renderer
+	std::cout << glGetString(GL_VENDOR) << std::endl;
+	std::cout << glGetString(GL_VERSION) << std::endl;
+	std::cout << glGetString(GL_RENDERER) << std::endl;
 
-
-		GLuint program = newProgram(vertexShader, fragmentShader);
-
-		glUseProgram(program);
-
-		GLuint vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
+	// Set debug output
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback((GLDEBUGPROC)debugCallback, 0);
 
 
-		const auto colorAttrib = glGetAttribLocation(program, "color");
-		const auto posAttrib = glGetAttribLocation(program, "position");
+	GLuint program = newProgram(vertexShader, fragmentShader);
 
-		// Create Vertex Buffer
-		GLuint vertexBuffer = 0;
-		glGenBuffers(1, &vertexBuffer);
+	glUseProgram(program);
 
-		// Fill vertex buffer with demo data (16,777,216 vec2 float Values, all zero)
-		const std::vector<float> vertices = std::vector<float>(134217728, 0.f);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
-
-		// Create Color Buffer
-		GLuint colorBuffer = 0;
-		glGenBuffers(1, &colorBuffer);
-
-		// Fill color buffer with demo data (16,777,216 RGB Values, all 255)
-		const std::vector<char> colors = std::vector<char>(50331648, (char)255);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, colors.size(), colors.data(), GL_DYNAMIC_DRAW);
-
-		// Bind color buffer and set format
-		glEnableVertexAttribArray(colorAttrib);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glVertexAttribPointer(colorAttrib, 3, GL_UNSIGNED_BYTE, GL_TRUE, 0, nullptr);
-
-		// Bind vertex buffer and set format
-		glEnableVertexAttribArray(posAttrib);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
 
-		while (!glfwWindowShouldClose(window)) {
-			glfwPollEvents();
-			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, GLFW_TRUE);
+	const auto colorAttrib = glGetAttribLocation(program, "color");
+	const auto posAttrib = glGetAttribLocation(program, "position");
 
-			glClearColor(0.1f, 0.1f, 0.1f, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Create Vertex Buffer
+	GLuint vertexBuffer = 0;
+	glGenBuffers(1, &vertexBuffer);
 
-			glPointSize(10.f);
-			glDrawArrays(GL_POINTS, 2048, 4096);
+	// Fill vertex buffer with demo data (16,777,216 vec2 float Values, all zero)
+	const std::vector<float> vertices = std::vector<float>(134217728, 0.f);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
 
-			glfwSwapBuffers(window);
-		}
+	// Create Color Buffer
+	GLuint colorBuffer = 0;
+	glGenBuffers(1, &colorBuffer);
+
+	// Fill color buffer with demo data (16,777,216 RGB Values, all 255)
+	const std::vector<char> colors = std::vector<char>(50331648, (char)255);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, colors.size(), colors.data(), GL_DYNAMIC_DRAW);
+
+	// Bind color buffer and set format
+	glEnableVertexAttribArray(colorAttrib);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glVertexAttribPointer(colorAttrib, 3, GL_UNSIGNED_BYTE, GL_TRUE, 0, nullptr);
+
+	// Bind vertex buffer and set format
+	glEnableVertexAttribArray(posAttrib);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glPointSize(10.f);
+		glDrawArrays(GL_POINTS, 2048, 4096);
+
+		glfwSwapBuffers(window);
 	}
+
+	glDeleteVertexArrays(1, &vao);
+	glDeleteProgram(program);
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &colorBuffer);
 
 	glfwTerminate();
 
