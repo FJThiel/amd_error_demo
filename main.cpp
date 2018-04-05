@@ -210,9 +210,11 @@ int main(int /*argc*/, char * /*argv[]*/) {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 
-	// Set debug output
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback((GLDEBUGPROC)debugCallback, 0);
+	// Set debug output (if available, only available in 4.3 or higher)
+	if (glad_glDebugMessageCallback) {
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback((GLDEBUGPROC)debugCallback, 0);
+	}
 
 
 	GLuint program = newProgram(vertexShader, fragmentShader);
