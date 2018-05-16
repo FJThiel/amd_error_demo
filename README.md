@@ -1,9 +1,6 @@
 # AMD OpenGL Vertex Shader/Buffer issue
 Minimal (not-) working demo, demonstrating unexpected behaviour on AMD cards. 
 
-# UPDATE
-Issue seems to be fixed now (Driver Version 18.4.1)
-
 ## Issue:
 When color values are passed as RGB888 to the Shader it only passes
 the first 4096 correct. After that, the renderer will use random values
